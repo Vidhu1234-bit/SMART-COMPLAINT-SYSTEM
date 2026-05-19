@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'https://smart-complaint-system-backend-y5yc.onrender.com/api',
+  baseURL: 'https://smart-complaint-system-backend-8egk.onrender.com/api',
 });
 
 API.interceptors.request.use((config) => {

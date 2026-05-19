@@ -10,7 +10,7 @@ const aiRoutes = require('./routes/aiRoutes');
 const app = express();
 
 app.use(cors({
-  origin: ['http://localhost:5173', 'https://smart-complaint-system-qevt.onrender.com'],
+  origin: ['http://localhost:5173', 'https://smart-complaint-system-frontend-30f6.onrender.com'],
   credentials: true
 }));
 app.use(express.json());
