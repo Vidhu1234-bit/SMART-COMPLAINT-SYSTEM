@@ -13,8 +13,8 @@ export default function Navbar() {
   return (
     <nav className="navbar">
       <div className="nav-brand">
-        <span className="nav-icon">⚡</span>
-        <Link to="/dashboard" className="brand-text">CivicAI</Link>
+        <span className="nav-icon">🏛️</span>
+        <Link to="/dashboard" className="brand-text">Nagar<span>Seva</span></Link>
       </div>
       {user && (
         <div className="nav-links">

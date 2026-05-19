@@ -2,8 +2,11 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import API from '../api/axios';
 
-const CATEGORIES = ['All', 'Water Supply', 'Electricity', 'Roads & Transport',
-  'Garbage & Sanitation', 'Street Lighting', 'Drainage', 'Parks & Recreation', 'Other'];
+const CATEGORIES = [
+  'All', 'Water Supply', 'Electricity', 'Roads & Transport',
+  'Garbage & Sanitation', 'Street Lighting', 'Drainage',
+  'Parks & Recreation', 'Other'
+];
 
 export default function ComplaintList() {
   const [complaints, setComplaints] = useState([]);
@@ -41,23 +44,33 @@ export default function ComplaintList() {
       <div className="page-header">
         <div>
           <h1>All Complaints</h1>
-          <p>{filtered.length} complaints found</p>
+          <p>{filtered.length} complaint{filtered.length !== 1 ? 's' : ''} found</p>
         </div>
         <Link to="/register-complaint" className="btn-primary">+ New Complaint</Link>
       </div>
 
       <div className="filter-bar">
-        <input className="search-input" type="text" placeholder="🔍 Search by location or title..."
-          value={search} onChange={e => setSearch(e.target.value)} />
+        <input
+          className="search-input"
+          type="text"
+          placeholder="Search by location or title..."
+          value={search}
+          onChange={e => setSearch(e.target.value)} />
         <div className="category-filters">
           {CATEGORIES.map(c => (
-            <button key={c} className={`filter-btn ${category === c ? 'active' : ''}`}
-              onClick={() => setCategory(c)}>{c}</button>
+            <button
+              key={c}
+              className={`filter-btn ${category === c ? 'active' : ''}`}
+              onClick={() => setCategory(c)}>
+              {c}
+            </button>
           ))}
         </div>
       </div>
 
-      {loading ? <div className="loading">Loading complaints...</div> : (
+      {loading ? (
+        <div className="loading">Loading complaints...</div>
+      ) : (
         <div className="complaints-grid">
           {filtered.map(c => (
             <Link to={`/complaints/${c._id}`} key={c._id} className="complaint-card">
@@ -76,10 +89,16 @@ export default function ComplaintList() {
                   </span>
                 )}
               </div>
-              <div className="card-date">{new Date(c.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</div>
+              <div className="card-date">
+                {new Date(c.createdAt).toLocaleDateString('en-IN', {
+                  day: 'numeric', month: 'short', year: 'numeric'
+                })}
+              </div>
             </Link>
           ))}
-          {filtered.length === 0 && <div className="empty-state">No complaints match your search.</div>}
+          {filtered.length === 0 && (
+            <div className="empty-state">No complaints match your search.</div>
+          )}
         </div>
       )}
     </div>

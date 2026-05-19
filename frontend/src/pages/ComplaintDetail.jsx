@@ -12,6 +12,7 @@ export default function ComplaintDetail() {
   const [aiLoading, setAiLoading] = useState(false);
   const [updateLoading, setUpdateLoading] = useState(false);
   const [msg, setMsg] = useState('');
+  const [msgType, setMsgType] = useState('success');
 
   useEffect(() => {
     API.get(`/complaints/${id}`).then(({ data }) => {
@@ -26,7 +27,11 @@ export default function ComplaintDetail() {
       const { data } = await API.put(`/complaints/${id}`, { status });
       setComplaint(data.complaint);
       setMsg('Status updated successfully!');
-    } catch { setMsg('Update failed.'); }
+      setMsgType('success');
+    } catch {
+      setMsg('Update failed.');
+      setMsgType('error');
+    }
     setUpdateLoading(false);
   };
 
@@ -38,7 +43,11 @@ export default function ComplaintDetail() {
       const { data } = await API.get(`/complaints/${id}`);
       setComplaint(data);
       setMsg('AI analysis complete!');
-    } catch { setMsg('AI analysis failed. Check your API key.'); }
+      setMsgType('success');
+    } catch {
+      setMsg('AI analysis failed. Check your API key.');
+      setMsgType('error');
+    }
     setAiLoading(false);
   };
 
@@ -48,31 +57,33 @@ export default function ComplaintDetail() {
     navigate('/complaints');
   };
 
-  if (!complaint) return <div className="loading">Loading...</div>;
+  if (!complaint) return <div className="loading">Loading complaint...</div>;
 
   const ai = complaint.aiAnalysis;
   const priorityColor = (p) =>
     p === 'High' ? 'badge-red' : p === 'Medium' ? 'badge-orange' : 'badge-gray';
+  const statusColor = (s) =>
+    s === 'Resolved' ? 'badge-green' : s === 'In Progress' ? 'badge-blue' : 'badge-yellow';
 
   return (
     <div className="page">
-      <button className="btn-back" onClick={() => navigate('/complaints')}>← Back</button>
+      <button className="btn-back" onClick={() => navigate('/complaints')}>← Back to Complaints</button>
 
       <div className="detail-grid">
         <div className="detail-main">
           <div className="detail-card">
             <div className="detail-top">
               <span className="category-tag">{complaint.category}</span>
-              <span className={`badge ${complaint.status === 'Resolved' ? 'badge-green' : complaint.status === 'In Progress' ? 'badge-blue' : 'badge-yellow'}`}>
-                {complaint.status}
-              </span>
+              <span className={`badge ${statusColor(complaint.status)}`}>{complaint.status}</span>
             </div>
             <h1 className="detail-title">{complaint.title}</h1>
             <div className="detail-meta">
               <span>👤 {complaint.name}</span>
               <span>✉️ {complaint.email}</span>
               <span>📍 {complaint.location}</span>
-              <span>🗓️ {new Date(complaint.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+              <span>🗓️ {new Date(complaint.createdAt).toLocaleDateString('en-IN', {
+                day: 'numeric', month: 'long', year: 'numeric'
+              })}</span>
             </div>
             <div className="detail-description">
               <h3>Description</h3>
@@ -80,17 +91,22 @@ export default function ComplaintDetail() {
             </div>
           </div>
 
-          {/* AI Analysis */}
           {ai?.priority ? (
             <div className="ai-card">
               <div className="ai-header">
-                <span className="ai-badge">🤖 AI Analysis</span>
-                <span className={`badge ${priorityColor(ai.priority)}`}>⚡ {ai.priority} Priority</span>
+                <span className="ai-badge">AI Analysis</span>
+                <span className={`badge ${priorityColor(ai.priority)}`}>
+                  ⚡ {ai.priority} Priority
+                </span>
               </div>
               <div className="ai-grid">
                 <div className="ai-item">
                   <div className="ai-label">Responsible Department</div>
                   <div className="ai-value">🏛️ {ai.department}</div>
+                </div>
+                <div className="ai-item">
+                  <div className="ai-label">Priority Level</div>
+                  <div className="ai-value">⚡ {ai.priority}</div>
                 </div>
                 <div className="ai-item full">
                   <div className="ai-label">AI Summary</div>
@@ -104,39 +120,46 @@ export default function ComplaintDetail() {
             </div>
           ) : (
             <div className="ai-placeholder">
-              <div className="ai-placeholder-text">
-                <h3>🤖 AI Analysis Not Yet Run</h3>
-                <p>Click "Run AI Analysis" to detect priority, suggest department, and generate auto-response.</p>
-              </div>
+              <h3>AI Analysis Not Yet Run</h3>
+              <p>Click "Run AI Analysis" to detect priority, suggest department, and generate an auto-response for this complaint.</p>
             </div>
           )}
         </div>
 
-        {/* Sidebar */}
         <div className="detail-sidebar">
           <div className="sidebar-card">
             <h3>Update Status</h3>
             <select value={status} onChange={e => setStatus(e.target.value)}>
               {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
             </select>
-            <button className="btn-primary full-width" onClick={handleStatusUpdate} disabled={updateLoading}>
+            <button
+              className="btn-primary full-width"
+              onClick={handleStatusUpdate}
+              disabled={updateLoading}>
               {updateLoading ? 'Updating...' : 'Update Status'}
             </button>
           </div>
 
           <div className="sidebar-card">
             <h3>AI Actions</h3>
-            <button className="btn-ai full-width" onClick={handleAIAnalyze} disabled={aiLoading}>
-              {aiLoading ? '🤖 Analyzing...' : '🤖 Run AI Analysis'}
+            <button
+              className="btn-ai full-width"
+              onClick={handleAIAnalyze}
+              disabled={aiLoading}>
+              {aiLoading ? 'Analyzing...' : 'Run AI Analysis'}
             </button>
           </div>
 
           <div className="sidebar-card">
             <h3>Danger Zone</h3>
-            <button className="btn-danger full-width" onClick={handleDelete}>🗑️ Delete Complaint</button>
+            <button className="btn-danger full-width" onClick={handleDelete}>
+              Delete Complaint
+            </button>
           </div>
 
-          {msg && <div className="alert alert-success">{msg}</div>}
+          {msg && (
+            <div className={`alert alert-${msgType}`}>{msg}</div>
+          )}
         </div>
       </div>
     </div>
