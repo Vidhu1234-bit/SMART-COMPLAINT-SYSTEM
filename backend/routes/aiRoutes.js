@@ -29,7 +29,7 @@ Return this exact JSON structure:
     const response = await axios.post(
       'https://openrouter.ai/api/v1/chat/completions',  // ← Outlier endpoint
       {
-        model: "openrouter/free",   // ← use whichever model Outlier gave you access to
+        model: "model: "openai/gpt-3.5-turbo"",   // ← use whichever model Outlier gave you access to
         messages: [
           { role: 'system', content: 'You are a helpful smart city complaint management AI. Always respond with valid JSON only.' },
           { role: 'user', content: prompt }
@@ -38,7 +38,7 @@ Return this exact JSON structure:
       },
       {
         headers: {
-          'Authorization': `Bearer ${process.env.OUTLIER_API_KEY}`,
+          'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
           'Content-Type': 'application/json'
         }
       }
